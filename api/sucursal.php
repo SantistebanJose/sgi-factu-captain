@@ -1,12 +1,26 @@
 <?php
 /**
  * Registra una sucursal y sus archivos.
- * Envío recomendado: multipart/form-data con `datos` (JSON), `certificado`
- * y `logo`. El campo `datos` también puede enviarse como objeto JSON crudo
- * cuando no se adjuntan archivos.
+ *
+ * Envío: multipart/form-data con
+ *   - datos        (texto)   JSON con ruc, contrasenia_firma, nombre_archivo_firma,
+ *                            ws, usuario_sol, clave, series
+ *   - certificado  (archivo) .pfx o .p12  (obligatorio)
+ *   - logo         (archivo) PNG, JPEG o WebP hasta 5 MB (opcional)
+ *
+ * Seguridad (configurar en el servidor):
+ *   - Defina la variable de entorno FACTURADOR_API_TOKEN y envíe el header
+ *     "Authorization: Bearer <token>". Si no está definida, no se exige token.
+ *   - Lo ideal es que la carpeta /sucursales quede FUERA del directorio público.
+ *     Si no es posible, este script crea un .htaccess que bloquea el acceso web.
+ *   - Revise upload_max_filesize y post_max_size en php.ini (mínimo 6M).
  */
 
 header('Content-Type: application/json; charset=utf-8');
+
+// Cambie a true para verificar que la contraseña abre el certificado.
+// Con OpenSSL 3 algunos .pfx antiguos pueden fallar; pruebe antes de activarlo.
+const VALIDAR_CERTIFICADO = false;
 
 function responder($estado, $cuerpo)
 {
@@ -45,15 +59,30 @@ function validar_archivo_subido($campo)
     return $_FILES[$campo];
 }
 
+function exigir_token()
+{
+    $esperado = getenv('FACTURADOR_API_TOKEN');
+    if ($esperado === false || $esperado === '') {
+        return;
+    }
+    $cabecera = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
+    if (!preg_match('/^Bearer\s+(.+)$/i', $cabecera, $m) || !hash_equals($esperado, trim($m[1]))) {
+        responder(401, array('ok' => false, 'error' => 'No autorizado.'));
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Allow: POST');
     responder(405, array('ok' => false, 'error' => 'Use el método POST.'));
 }
 
-$contenido = isset($_POST['datos']) ? $_POST['datos'] : file_get_contents('php://input');
+exigir_token();
+
+// ---------- Datos ----------
+$contenido = isset($_POST['datos']) ? $_POST['datos'] : '';
 $datos = json_decode($contenido, true);
 if (!is_array($datos)) {
-    responder(400, array('ok' => false, 'error' => 'Envíe un JSON válido; en multipart use el campo datos.'));
+    responder(400, array('ok' => false, 'error' => 'Envíe multipart/form-data con el campo datos en JSON válido.'));
 }
 
 $ruc = isset($datos['ruc']) ? trim((string) $datos['ruc']) : '';
@@ -84,6 +113,7 @@ foreach ($seriesEsperadas as $tipo) {
     $series[$tipo] = strtoupper((string) $series[$tipo]);
 }
 
+// ---------- Archivos ----------
 $certificado = validar_archivo_subido('certificado');
 $logo = validar_archivo_subido('logo');
 if ($certificado === null) {
@@ -93,28 +123,52 @@ $extensionCertificado = strtolower(pathinfo($certificado['name'], PATHINFO_EXTEN
 if (!in_array($extensionCertificado, array('pfx', 'p12'), true)) {
     responder(422, array('ok' => false, 'error' => 'El certificado debe ser .pfx o .p12.'));
 }
+if (VALIDAR_CERTIFICADO && function_exists('openssl_pkcs12_read')) {
+    $almacen = array();
+    $bytes = file_get_contents($certificado['tmp_name']);
+    if ($bytes === false || !@openssl_pkcs12_read($bytes, $almacen, $contrasenia)) {
+        responder(422, array('ok' => false, 'error' => 'No se pudo abrir el certificado: verifique el archivo y la contrasenia_firma.'));
+    }
+}
+
+$tiposLogo = array('image/png' => 'png', 'image/jpeg' => 'jpg', 'image/webp' => 'webp');
+$mimeLogo = '';
 if ($logo !== null) {
-    $mimeLogo = function_exists('mime_content_type') ? mime_content_type($logo['tmp_name']) : '';
-    $tiposLogo = array('image/png' => 'png', 'image/jpeg' => 'jpg', 'image/webp' => 'webp');
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeLogo = (string) finfo_file($finfo, $logo['tmp_name']);
+        finfo_close($finfo);
+    } elseif (function_exists('mime_content_type')) {
+        $mimeLogo = (string) mime_content_type($logo['tmp_name']);
+    }
     if (!isset($tiposLogo[$mimeLogo]) || $logo['size'] > 5 * 1024 * 1024) {
         responder(422, array('ok' => false, 'error' => 'El logo debe ser PNG, JPEG o WebP y pesar hasta 5 MB.'));
     }
 }
 
-$directorio = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'sucursales' . DIRECTORY_SEPARATOR . $ruc;
-if (file_exists($directorio)) {
-    responder(409, array('ok' => false, 'error' => 'Ya existe una sucursal con ese RUC.'));
+// ---------- Carpetas ----------
+$base = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'sucursales';
+if (!is_dir($base)) {
+    if (!mkdir($base, 0750, true) && !is_dir($base)) {
+        responder(500, array('ok' => false, 'error' => 'No se pudo crear la carpeta base de sucursales.'));
+    }
 }
-if (!mkdir($directorio, 0750, true)) {
+// Bloqueo de acceso web por si la carpeta queda dentro del directorio público (Apache).
+if (!file_exists($base . DIRECTORY_SEPARATOR . '.htaccess')) {
+    @file_put_contents($base . DIRECTORY_SEPARATOR . '.htaccess', "Require all denied\n");
+}
+
+$directorio = $base . DIRECTORY_SEPARATOR . $ruc;
+// mkdir sin recursividad es atómico: evita carreras entre dos solicitudes con el mismo RUC.
+if (!@mkdir($directorio, 0750)) {
+    if (file_exists($directorio)) {
+        responder(409, array('ok' => false, 'error' => 'Ya existe una sucursal con ese RUC.'));
+    }
     responder(500, array('ok' => false, 'error' => 'No se pudo crear el directorio de la sucursal.'));
 }
 
-$rutas = array(
-    $directorio . DIRECTORY_SEPARATOR . 'cdr',
-    $directorio . DIRECTORY_SEPARATOR . 'xml'
-);
-foreach ($rutas as $ruta) {
-    if (!mkdir($ruta, 0750)) {
+foreach (array('cdr', 'xml') as $subcarpeta) {
+    if (!mkdir($directorio . DIRECTORY_SEPARATOR . $subcarpeta, 0750)) {
         limpiar_directorio($directorio);
         responder(500, array('ok' => false, 'error' => 'No se pudieron crear las carpetas CDR y XML.'));
     }
@@ -125,6 +179,7 @@ if (!move_uploaded_file($certificado['tmp_name'], $rutaCertificado)) {
     limpiar_directorio($directorio);
     responder(500, array('ok' => false, 'error' => 'No se pudo guardar el certificado.'));
 }
+@chmod($rutaCertificado, 0640);
 
 $config = array(
     'ruc' => $ruc,
@@ -140,25 +195,32 @@ $config = array(
 );
 
 if ($logo !== null) {
-    $extensionLogo = $tiposLogo[$mimeLogo];
-    $nombreLogo = 'logo.' . $extensionLogo;
-    if (!move_uploaded_file($logo['tmp_name'], $directorio . DIRECTORY_SEPARATOR . $nombreLogo)) {
+    $nombreLogo = 'logo.' . $tiposLogo[$mimeLogo];
+    $rutaLogo = $directorio . DIRECTORY_SEPARATOR . $nombreLogo;
+    if (!move_uploaded_file($logo['tmp_name'], $rutaLogo)) {
         limpiar_directorio($directorio);
         responder(500, array('ok' => false, 'error' => 'No se pudo guardar el logo.'));
     }
+    @chmod($rutaLogo, 0640);
     $config['logo'] = 'sucursales/' . $ruc . '/' . $nombreLogo;
 }
 
 $json = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-if ($json === false || file_put_contents($directorio . DIRECTORY_SEPARATOR . 'datos.json', $json . PHP_EOL, LOCK_EX) === false) {
+$rutaJson = $directorio . DIRECTORY_SEPARATOR . 'datos.json';
+if ($json === false || file_put_contents($rutaJson, $json . PHP_EOL, LOCK_EX) === false) {
     limpiar_directorio($directorio);
     responder(500, array('ok' => false, 'error' => 'No se pudo guardar la configuración de la sucursal.'));
 }
+@chmod($rutaJson, 0640);
 
 responder(201, array(
     'ok' => true,
     'mensaje' => 'Sucursal registrada correctamente.',
     'ruc' => $ruc,
     'carpeta' => 'sucursales/' . $ruc,
-    'archivos' => array('configuracion' => 'datos.json', 'certificado' => $nombreCertificado, 'logo' => $config['logo'])
+    'archivos' => array(
+        'configuracion' => 'datos.json',
+        'certificado' => $nombreCertificado,
+        'logo' => $config['logo']
+    )
 ));
