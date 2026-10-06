@@ -1,0 +1,8 @@
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+.env
+.env.*
+vendor/

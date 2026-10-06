@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DespatchAdvice xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1" xmlns="urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2">
+    <ext:UBLExtensions>
+        <ext:UBLExtension>
+            <ext:ExtensionContent><ds:Signature Id="SignatureSP"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI=""><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>eonsiZIm5ng9MiANGVdPEaqrS5g=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>SEXrfo/bXxhWydo6lu6twBkM5Yt15mBtw2XEL9dAKn/uQ0o5BJ0fmTItRI3vGDP5DRPFS96wOeL06vy7ZSGPfJb7VF89I2Ok6xGeoMdU6M+a6oPWEN8VFT1QrIG76AmIz0JeFApviucgLGT+UzfFydpTOAnWn+Pfcl/O7cZS6/E5byZgHGI9wymshLayuZgwHg3h5CHoqb2LQRBfawcUvVeTqZLa1MTVO+4ZaovK6FvTafbNtbh43mZhQvbtwPrZcYVfEj81EDChyOHyvje3A+Mn5tRstHjFu6c4E+Ewsn6Zf71bRw653xQQPHQg9i0EB3JWACydcqGyUF1adzZ0hA==</ds:SignatureValue><ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIIE9zCCA9+gAwIBAgIIFucPG0ZHM4AwDQYJKoZIhvcNAQEFBQAwggENMRswGQYKCZImiZPyLGQBGRYLTExBTUEuUEUgU0ExCzAJBgNVBAYTAlBFMQ0wCwYDVQQIDARMSU1BMQ0wCwYDVQQHDARMSU1BMRgwFgYDVQQKDA9UVSBFTVBSRVNBIFMuQS4xRTBDBgNVBAsMPEROSSA5OTk5OTk5IFJVQyAyMDYwNzU5OTcyNyAtIENFUlRJRklDQURPIFBBUkEgREVNT1NUUkFDScOTTjFEMEIGA1UEAww7Tk9NQlJFIFJFUFJFU0VOVEFOVEUgTEVHQUwgLSBDRVJUSUZJQ0FETyBQQVJBIERFTU9TVFJBQ0nDk04xHDAaBgkqhkiG9w0BCQEWDWRlbW9AbGxhbWEucGUwHhcNMjEwNzE5MjE1MzE4WhcNMjMwNzE5MjE1MzE4WjCCAQ0xGzAZBgoJkiaJk/IsZAEZFgtMTEFNQS5QRSBTQTELMAkGA1UEBhMCUEUxDTALBgNVBAgMBExJTUExDTALBgNVBAcMBExJTUExGDAWBgNVBAoMD1RVIEVNUFJFU0EgUy5BLjFFMEMGA1UECww8RE5JIDk5OTk5OTkgUlVDIDIwNjA3NTk5NzI3IC0gQ0VSVElGSUNBRE8gUEFSQSBERU1PU1RSQUNJw5NOMUQwQgYDVQQDDDtOT01CUkUgUkVQUkVTRU5UQU5URSBMRUdBTCAtIENFUlRJRklDQURPIFBBUkEgREVNT1NUUkFDScOTTjEcMBoGCSqGSIb3DQEJARYNZGVtb0BsbGFtYS5wZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAPhQf8Aj1A2X0WkvHjkEG5FGNeirHlCNT1WA3H6FZELkEdmq4RMONWAEzK5sjNZf6okpueEEizbqj7ttBIi0qVXYxdm+o1eHAxySYUtKtAswegrPRrOC6M6v115ciqd+Y3F+QRHegHV8pXC3CXoCbLPzuvJd6Pnf7Hip094Hgs4RMnQuDDHgbt2SHUkoZdtlyzY1u6Y5ZLHne15dW9gvl7tCfYZTaLjb3iI4lJqIKg8RG5dG5ifn0OXhYVkjzPXRChKEXluFqa4cU6Vp0bPT7gJTz81Eud/Ln0nxrD3z8IkrFNDX8ceEjs90sE8KQln2FnX8QMRTVQrbGun+ztI/96kCAwEAAaNXMFUwHQYDVR0OBBYEFCVBmlarPPDuMUUoRZ31GbAtWfEVMB8GA1UdIwQYMBaAFCVBmlarPPDuMUUoRZ31GbAtWfEVMBMGA1UdJQQMMAoGCCsGAQUFBwMBMA0GCSqGSIb3DQEBBQUAA4IBAQBB1s1GeV/SvTBnIx5GV4Z7wTriqVbp0uFHJsILiKbMdmK1LjkgPoimOsRv8GC4mYAZUhfvJ544l/0JSHtXzmp/cqsAiZuQOIeM+XUGIsR15gmX9C4EPW3nMgEXUjkQfxbVdtz94UNs0PzK7kMwQnzIRQB9FZthBIuoEZSNWg5NVCaiegOlS1KN9chzAZItAJXxloSVDz6uc75LHUkuOIQAttOMuCEMdJE7PeqjSQZqUgZlXiZyN5umShcY9T6p+o8R0764VxvMy/iiQDZwguF16Q033zBMDsYK2M86gTMExC4MpNyk3Om/cYvHPTNCb91ipV08beCQtqz2fu1LU1Rj</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature></ext:ExtensionContent>
+        </ext:UBLExtension>
+    </ext:UBLExtensions>
+    <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+    <cbc:CustomizationID>1.0</cbc:CustomizationID>
+    <cbc:ID>T001-1234</cbc:ID>
+    <cbc:IssueDate>2021-08-24</cbc:IssueDate>
+    <cbc:IssueTime>19:43:00</cbc:IssueTime>
+    <cbc:DespatchAdviceTypeCode>09</cbc:DespatchAdviceTypeCode>
+    <cbc:Note>--</cbc:Note>
+	<cac:Signature>
+		<cbc:ID>T001-1234</cbc:ID>
+		<cac:SignatoryParty>
+			<cac:PartyIdentification>
+				<cbc:ID>20607599727</cbc:ID>
+			</cac:PartyIdentification>
+			<cac:PartyName>
+				<cbc:Name><![CDATA[INSTITUTO INTERNACIONAL DE SOFTWARE S.A.C.]]></cbc:Name>
+			</cac:PartyName>
+		</cac:SignatoryParty>
+		<cac:DigitalSignatureAttachment>
+			<cac:ExternalReference>
+				<cbc:URI>#SignatureSP</cbc:URI>
+			</cac:ExternalReference>
+		</cac:DigitalSignatureAttachment>
+	</cac:Signature>    
+    <cac:DespatchSupplierParty>
+            <cbc:CustomerAssignedAccountID schemeID="6">20607599727</cbc:CustomerAssignedAccountID>
+            <cac:Party>
+                <cac:PartyLegalEntity>
+                    <cbc:RegistrationName><![CDATA[INSTITUTO INTERNACIONAL DE SOFTWARE S.A.C.]]></cbc:RegistrationName>
+                </cac:PartyLegalEntity>
+            </cac:Party>
+        </cac:DespatchSupplierParty>    
+    <cac:DeliveryCustomerParty>
+    <cbc:CustomerAssignedAccountID schemeID="6">20605145648</cbc:CustomerAssignedAccountID>
+        <cac:Party>
+            <cac:PartyLegalEntity>
+                <cbc:RegistrationName><![CDATA[AGROINVERSIONES Y SERVICIOS AJINOR S.R.L. - AGROSERVIS AJINOR S.R.L.]]></cbc:RegistrationName>
+            </cac:PartyLegalEntity>
+        </cac:Party>
+    </cac:DeliveryCustomerParty>    
+    <cac:Shipment>
+            <cbc:ID>1</cbc:ID>
+            <cbc:HandlingCode>01</cbc:HandlingCode>
+            <cbc:Information>VENTA</cbc:Information>
+            <cbc:GrossWeightMeasure unitCode="KGM">5500.00</cbc:GrossWeightMeasure>
+            <cac:ShipmentStage>
+                <cbc:TransportModeCode>02</cbc:TransportModeCode>
+                <cac:TransitPeriod>
+                    <cbc:StartDate>2021-09-01</cbc:StartDate>
+                </cac:TransitPeriod>
+                <cac:TransportMeans>
+    	            <cac:RoadTransport>
+    	               <cbc:LicensePlateID>M4S-945</cbc:LicensePlateID>
+    	            </cac:RoadTransport>
+		        </cac:TransportMeans>
+		         <cac:DriverPerson>
+		            <cbc:ID schemeID="1">47163065</cbc:ID>
+		         </cac:DriverPerson>		        
+            </cac:ShipmentStage>            
+            <cac:Delivery>
+                <cac:DeliveryAddress>
+                    <cbc:ID>140306</cbc:ID>
+                    <cbc:StreetName><![CDATA[LOCAL ESCOLAR Nª11572 MOCHICA DEL C.P 25 DE FEBRERO MORROPE-LAMBAYEQUE-LAMBAYEQUE]]></cbc:StreetName>
+                </cac:DeliveryAddress>
+            </cac:Delivery>
+            
+            <cac:OriginAddress>
+                        <cbc:ID>140306</cbc:ID>
+                        <cbc:StreetName><![CDATA[CAR.PAMERICANA NORTE KM. 807 OTR. PANAMERICANA NORTE LAMBAYEQUE - LAMBAYEQUE - MORROPE]]></cbc:StreetName>
+            </cac:OriginAddress>
+        </cac:Shipment><cac:DespatchLine>
+            <cbc:ID>1</cbc:ID>
+            <cbc:DeliveredQuantity unitCode="NIU">500</cbc:DeliveredQuantity>
+            <cac:OrderLineReference>
+                <cbc:LineID>1</cbc:LineID>
+            </cac:OrderLineReference>    
+            <cac:Item>
+                <cbc:Name><![CDATA[MOCHILA]]></cbc:Name>
+                <cac:SellersItemIdentification>
+                    <cbc:ID>123</cbc:ID>
+                </cac:SellersItemIdentification>
+            </cac:Item>
+        </cac:DespatchLine></DespatchAdvice>

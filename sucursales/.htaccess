@@ -1,0 +1,4 @@
+Options -Indexes
+<FilesMatch "(?i)(\.pfx$|\.p12$|datos\.json$)">
+    Require all denied
+</FilesMatch>
